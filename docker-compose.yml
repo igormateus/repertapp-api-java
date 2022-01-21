@@ -1,0 +1,50 @@
+version: '3.1'
+
+services:
+
+  postgres:
+    image: postgres
+    container_name: postgresql
+    restart: always
+    environment:
+      POSTGRES_USER: repertapp
+      POSTGRES_PASSWORD: teste_repertapp
+      POSTGRES_DB: repertapp
+    ports:
+      - 5432:5432
+    volumes:
+      - repertapp_data:/var/lib/postgresql/data
+    # networks:
+    #   - postgres-network
+      
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   environment: 
+  #     ADMINER_DEFAULT_SERVER: postgres
+  #   ports: 
+  #     - 80:8080
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - postgres-network
+
+#   teste-pgadmin-compose:
+#     image: dpage/pgadmin4
+#     container_name: pgadmin
+#     environment:
+#       PGADMIN_DEFAULT_EMAIL: "admin@repertapp.com.br"
+#       PGADMIN_DEFAULT_PASSWORD: "admin"
+#     ports:
+#       - "16543:80"
+#     depends_on:
+#       - postgres
+#     networks:
+#       - postgres-network
+
+# networks: 
+#   postgres-network:
+#     driver: bridge
+
+volumes:
+  repertapp_data:
