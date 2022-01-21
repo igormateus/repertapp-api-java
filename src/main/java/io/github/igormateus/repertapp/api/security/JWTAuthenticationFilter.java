@@ -1,4 +1,4 @@
-package io.github.igormateus.repertapp.domain.security;
+package io.github.igormateus.repertapp.api.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,11 +27,11 @@ import lombok.AllArgsConstructor;
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     // TODO: Get TOKEN_EXPIRATION from properties
-    private static final int TOKEN_EXPIRATION = 600_000;
+    public static final int TOKEN_EXPIRATION = 600_000;
 
     // TODO: Get TOKEN_SECRET from properties
     // (guidgenerator.com/online-guid-generator.aspx)
-    private static final String TOKEN_SECRET = "463408a1-54c9-4307-bb1c-6cced559f5a7";
+    public static final String TOKEN_SECRET = "463408a1-54c9-4307-bb1c-6cced559f5a7";
 
     private final AuthenticationManager authenticationManager;
 
