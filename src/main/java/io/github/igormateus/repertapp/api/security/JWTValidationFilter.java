@@ -16,12 +16,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-public class JWTValideFilter extends BasicAuthenticationFilter {
+public class JWTValidationFilter extends BasicAuthenticationFilter {
 
     public static final String HEADER_ATTRIBUTE = "Authorization";
     public static final String ATTRIBUTE_PREFIX = "Bearer ";
 
-    public JWTValideFilter(AuthenticationManager authenticationManager) {
+    public JWTValidationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
     }
 
@@ -55,8 +55,8 @@ public class JWTValideFilter extends BasicAuthenticationFilter {
             return null;
         }
 
-        return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+        return new UsernamePasswordAuthenticationToken(
+            user, 
+            null, new ArrayList<>());
     }
-    // video https://www.youtube.com/watch?v=-xjF1rYltAQ&list=PLTN1gMq8EHuIpxyecEp04TvLr3TQbzMRL&index=3
-    // min 5:50
 }
