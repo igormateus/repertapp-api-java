@@ -1,4 +1,4 @@
-package io.github.igormateus.repertapp.domain.config;
+package io.github.igormateus.repertapp.api.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
