@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class UserDetailData implements UserDetails {
+public class UserDetailImpl implements UserDetails {
 
     private final Optional<User> usuario;
 
