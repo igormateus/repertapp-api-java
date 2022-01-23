@@ -8,27 +8,27 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import io.github.igormateus.repertapp.domain.model.User;
-import io.github.igormateus.repertapp.domain.model.UserDetailImpl;
+import io.github.igormateus.repertapp.domain.model.UserDetailsImpl;
 import io.github.igormateus.repertapp.domain.repository.UserRespository;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @Component
-public class UserDetailServiceImpl implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRespository userRespository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        
-        Optional<User> user = userRespository.findByLogin(username);
+
+        Optional<User> user = userRespository.findByUsername(username);
 
         if (user.isEmpty()) {
             throw new UsernameNotFoundException(
                     String.format("User '%s' not found", username));
         }
 
-        return new UserDetailImpl(user);
+        return new UserDetailsImpl(user);
     }
 
 }

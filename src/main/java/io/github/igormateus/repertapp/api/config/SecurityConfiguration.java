@@ -14,21 +14,21 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import io.github.igormateus.repertapp.api.security.JWTAuthenticationFilter;
 import io.github.igormateus.repertapp.api.security.JWTValidationFilter;
-import io.github.igormateus.repertapp.domain.service.UserDetailServiceImpl;
+import io.github.igormateus.repertapp.domain.service.UserDetailsServiceImpl;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @EnableWebSecurity
-public class JWTConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private final UserDetailServiceImpl userDetailService;
+    private final UserDetailsServiceImpl userDetailsService;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
         auth
-                .userDetailsService(userDetailService)
+                .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder);
     }
 
@@ -38,7 +38,7 @@ public class JWTConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable() // TODO: enable to production
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/login").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/users").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))

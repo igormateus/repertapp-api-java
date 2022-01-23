@@ -10,9 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class UserDetailImpl implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
 
-    private final Optional<User> usuario;
+    private final Optional<User> user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -21,12 +21,12 @@ public class UserDetailImpl implements UserDetails {
 
     @Override
     public String getPassword() {
-        return usuario.orElse(new User()).getPassword();
+        return user.orElse(new User()).getPassword();
     }
 
     @Override
     public String getUsername() {
-        return usuario.orElse(new User()).getLogin();
+        return user.orElse(new User()).getUsername();
     }
 
     @Override

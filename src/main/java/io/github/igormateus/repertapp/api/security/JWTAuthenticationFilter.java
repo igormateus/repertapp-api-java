@@ -18,22 +18,25 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import io.github.igormateus.repertapp.common.AppProperties;
 import io.github.igormateus.repertapp.domain.model.User;
-import io.github.igormateus.repertapp.domain.model.UserDetailImpl;
-import lombok.AllArgsConstructor;
+import io.github.igormateus.repertapp.domain.model.UserDetailsImpl;
 
-@AllArgsConstructor
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    // TODO: Get TOKEN_EXPIRATION from properties
-    public static final int TOKEN_EXPIRATION = 600_000;
-
-    // TODO: Get TOKEN_SECRET from properties
-    // (guidgenerator.com/online-guid-generator.aspx)
-    public static final String TOKEN_SECRET = "463408a1-54c9-4307-bb1c-6cced559f5a7";
+    public static int TOKEN_EXPIRATION = AppProperties.JWT.Token.expiration * 60 * 1000;
+    public static final String TOKEN_SECRET = AppProperties.JWT.Token.secret;
+    static final String TOKEN_PREFIX = "Bearer";
+	static final String HEADER_STRING = "Authorization";
 
     private final AuthenticationManager authenticationManager;
+
+    public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+        this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/auth/login", "POST"));
+    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -44,7 +47,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            user.getLogin(),
+                            user.getUsername(),
                             user.getPassword(),
                             new ArrayList<>() // Permissions
                     ));
@@ -57,17 +60,17 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
             Authentication authResult) throws IOException, ServletException {
 
-        UserDetailImpl userImpl = (UserDetailImpl) authResult.getPrincipal();
+        UserDetailsImpl userImpl = (UserDetailsImpl) authResult.getPrincipal();
 
         String token = JWT.create()
                 .withSubject(userImpl.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION))
                 .sign(Algorithm.HMAC512(TOKEN_SECRET));
 
+        response.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + token);
         response.getWriter().write(token);
         response.getWriter().flush();
 
         super.successfulAuthentication(request, response, chain, authResult);
     }
-
 }

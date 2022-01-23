@@ -10,5 +10,5 @@ import io.github.igormateus.repertapp.domain.model.User;
 @Repository
 public interface UserRespository extends JpaRepository<User, Long> {
     
-    public Optional<User> findByLogin(String login);
+    public Optional<User> findByUsername(String username);
 }
