@@ -1,4 +1,4 @@
-package io.github.igormateus.repertapp.dto;
+package io.github.igormateus.repertapp.dto.user;
 
 import lombok.Data;
 
