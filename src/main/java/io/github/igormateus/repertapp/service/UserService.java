@@ -6,6 +6,8 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,11 +15,14 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import io.github.igormateus.repertapp.dto.user.UserAuthResponseDTO;
+import io.github.igormateus.repertapp.dto.user.UserUpdateDTO;
 import io.github.igormateus.repertapp.exception.CustomException;
 import io.github.igormateus.repertapp.model.AppUser;
 import io.github.igormateus.repertapp.model.AppUserRole;
 import io.github.igormateus.repertapp.repository.UserRepository;
 import io.github.igormateus.repertapp.security.JwtTokenProvider;
+import io.github.igormateus.repertapp.validation.UserValidation;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -28,6 +33,19 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
+    private final UserValidation userValidation;
+
+    public UserAuthResponseDTO signup(@Valid AppUser appUser) {
+        userValidation.valideCreation(appUser);
+            
+        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+        appUser.setAppUserRoles(new ArrayList<AppUserRole>(new ArrayList<AppUserRole>(Arrays.asList(AppUserRole.ROLE_CLIENT))));
+        
+        AppUser user = userRepository.save(appUser);
+        String jwtToken = jwtTokenProvider.createToken(appUser.getUsername(), appUser.getAppUserRoles());
+
+        return new UserAuthResponseDTO(user, jwtToken);
+    }
 
     public String signin(String username, String password) {
         try {
@@ -38,30 +56,33 @@ public class UserService {
         }
     }
 
-    public String signup(@Valid AppUser appUser) {
-        if (userRepository.existsByUsername(appUser.getUsername()))
-            throw new CustomException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
-            
-        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
-        appUser.setAppUserRoles(new ArrayList<AppUserRole>(new ArrayList<AppUserRole>(Arrays.asList(AppUserRole.ROLE_CLIENT))));
-        userRepository.save(appUser);
-        return jwtTokenProvider.createToken(appUser.getUsername(), appUser.getAppUserRoles());
-    }
-
-    public void delete(String username) {
-        userRepository.deleteByUsername(username);
-    }
-
-    public AppUser search(String username) {
-        AppUser appUser = userRepository.findByUsername(username);
-        if (appUser == null) {
-            throw new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND);
-        }
-        return appUser;
-    }
-
     public AppUser whoami(HttpServletRequest req) {
         return userRepository.findByUsername(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)));
+    }
+
+    public Page<AppUser> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
+
+    public AppUser findOne(Long userId) {
+        return userRepository
+                .findById(userId)
+                .orElseThrow(() -> new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND));
+    }
+
+    public AppUser edit(UserUpdateDTO user, HttpServletRequest req) {
+        AppUser appUser = whoami(req);
+
+        userValidation.valideUpdate(appUser, user);
+
+        appUser.setUsername(user.getUsername());
+        appUser.setName(user.getName());
+        appUser.setEmail(user.getEmail());
+        appUser.setBio(user.getBio());
+        if (appUser.getPassword() != null) 
+            appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+
+        return userRepository.save(appUser);
     }
 
     public String refresh(String username) {
