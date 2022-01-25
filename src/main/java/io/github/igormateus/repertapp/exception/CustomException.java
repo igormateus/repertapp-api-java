@@ -10,17 +10,17 @@ public class CustomException extends RuntimeException {
     private final HttpStatus httpStatus;
   
     public CustomException(String message, HttpStatus httpStatus) {
-        this.message = message;
-        this.httpStatus = httpStatus;
+      this.message = message;
+      this.httpStatus = httpStatus;
     }
   
     @Override
     public String getMessage() {
-        return message;
+      return message;
     }
   
     public HttpStatus getHttpStatus() {
-        return httpStatus;
+      return httpStatus;
     }
   
   }
