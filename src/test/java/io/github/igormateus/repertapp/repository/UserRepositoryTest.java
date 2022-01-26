@@ -39,7 +39,118 @@ public class UserRepositoryTest {
         newUser.setUsername(null);
 
         Assertions.assertThatExceptionOfType(ConstraintViolationException.class)
-            .isThrownBy(() -> userRepository.save(newUser))
-            ;
+            .isThrownBy(() -> userRepository.save(newUser));
+    }
+
+    @Test
+    @DisplayName("save throws error when user has no password")
+    void save_throwsError_whenUserHasNoPassword(){
+        AppUser newUser = UserCreator.createToBeSaved();
+        newUser.setPassword(null);
+
+        Assertions.assertThatExceptionOfType(ConstraintViolationException.class)
+            .isThrownBy(() -> userRepository.save(newUser));
+    }
+
+    @Test
+    @DisplayName("save update user when successful")
+    void save_updateUser_whenSuccessful() {
+        AppUser user = UserCreator.createToBeSaved();
+        AppUser userSaved = userRepository.save(user);
+
+        userSaved.setUsername("new_user_name_test");
+        userSaved.setPassword("new_password_test");
+        userSaved.setBio("this is a new bio");
+        userSaved.setEmail("new@email.com");
+
+        AppUser userUpdated = userRepository.save(userSaved);
+
+        Assertions.assertThat(userUpdated)
+                .isNotNull()
+                .isEqualTo(userSaved);
+    }
+
+    @Test
+    @DisplayName("existsByUsername returns true when successful")
+    void existsByUsername_returnsTrue_whenSuccessful() {
+        AppUser user = UserCreator.createToBeSaved();
+        AppUser userSaved = userRepository.save(user);
+
+        boolean result = userRepository.existsByUsername(userSaved.getUsername());
+
+        Assertions.assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("existsByUsername returns false when successful")
+    void existsByUsername_returnsFalse_whenSuccessful() {
+        AppUser user = UserCreator.createToBeSaved();
+
+        boolean result = userRepository.existsByUsername(user.getUsername());
+
+        Assertions.assertThat(result).isFalse();
+    }
+
+    @Test
+    @DisplayName("existsByEmail returns true when successful")
+    void existsByEmail_returnsTrue_whenSuccessful() {
+        AppUser user = UserCreator.createToBeSaved();
+        AppUser userSaved = userRepository.save(user);
+
+        boolean result = userRepository.existsByEmail(userSaved.getEmail());
+
+        Assertions.assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("existsByEmail returns false when successful")
+    void existsByEmail_returnsFalse_whenSuccessful() {
+        AppUser user = UserCreator.createToBeSaved();
+
+        boolean result = userRepository.existsByEmail(user.getEmail());
+
+        Assertions.assertThat(result).isFalse();
+    }
+
+    @Test
+    @DisplayName("existsByName returns true when successful")
+    void existsByName_returnsTrue_whenSuccessful() {
+        AppUser user = UserCreator.createToBeSaved();
+        AppUser userSaved = userRepository.save(user);
+
+        boolean result = userRepository.existsByName(userSaved.getName());
+
+        Assertions.assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("existsByName returns false when successful")
+    void existsByName_returnsFalse_whenSuccessful() {
+        AppUser user = UserCreator.createToBeSaved();
+
+        boolean result = userRepository.existsByName(user.getName());
+
+        Assertions.assertThat(result).isFalse();
+    }
+
+    @Test
+    @DisplayName("findByUsername returns user when successful")
+    void findByUsername_returnsUser_whenSuccessful() {
+        AppUser user = UserCreator.createToBeSaved();
+        AppUser userSaved = userRepository.save(user);
+
+        AppUser userFound = userRepository.findByUsername(userSaved.getUsername());
+
+        Assertions.assertThat(userFound).isEqualTo(userSaved);
+    }
+
+    @Test
+    @DisplayName("findByUsername returns null when successful")
+    void findByUsername_returnsNull_whenSuccessful() {
+        AppUser user = UserCreator.createToBeSaved();
+
+        AppUser userFound = userRepository.findByUsername(user.getUsername());
+
+        Assertions.assertThat(userFound).isNull();
     }
 }
