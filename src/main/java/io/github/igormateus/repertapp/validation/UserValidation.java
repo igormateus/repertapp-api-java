@@ -39,17 +39,17 @@ public class UserValidation {
 
         if (!appUser.getUsername().equals(newUser.getUsername()) 
                 && userRepository.existsByUsername(newUser.getUsername()))
-            errors.add(String.format("Username '%s' is already in use", appUser.getUsername()));
+            errors.add(String.format("Username '%s' is already in use", newUser.getUsername()));
 
         if (newUser.getEmail() != null 
                 && appUser.getEmail() != newUser.getEmail()
                 && userRepository.existsByEmail(newUser.getEmail()))
-            errors.add(String.format("Email '%s' is already in use", appUser.getEmail()));
+            errors.add(String.format("Email '%s' is already in use", newUser.getEmail()));
 
         if (newUser.getName() != null 
                 && appUser.getName() != newUser.getName()
                 && userRepository.existsByName(newUser.getName()))
-            errors.add(String.format("Name '%s' is already in use", appUser.getName()));
+            errors.add(String.format("Name '%s' is already in use", newUser.getName()));
 
         if (errors.size() > 0)
             throw new CustomException(String.join("; ", errors), HttpStatus.UNPROCESSABLE_ENTITY);

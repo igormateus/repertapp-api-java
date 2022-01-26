@@ -39,7 +39,7 @@ public class UserService {
         userValidation.valideCreation(appUser);
             
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
-        appUser.setAppUserRoles(new ArrayList<AppUserRole>(new ArrayList<AppUserRole>(Arrays.asList(AppUserRole.ROLE_CLIENT))));
+        appUser.setAppUserRoles(new ArrayList<AppUserRole>(Arrays.asList(AppUserRole.ROLE_CLIENT)));
         
         AppUser user = userRepository.save(appUser);
         String jwtToken = jwtTokenProvider.createToken(appUser.getUsername(), appUser.getAppUserRoles());
