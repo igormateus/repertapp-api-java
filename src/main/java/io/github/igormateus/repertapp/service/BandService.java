@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import io.github.igormateus.repertapp.dto.band.BandUpdateDTO;
 import io.github.igormateus.repertapp.exception.CustomException;
 import io.github.igormateus.repertapp.model.AppUser;
 import io.github.igormateus.repertapp.model.Band;
@@ -41,6 +42,26 @@ public class BandService {
             throw new AccessDeniedException(String.format("You don't have access for Band '%s'", band.getName()));
 
         return band;
+    }
+
+    public Band edit(Long bandId, BandUpdateDTO bandUpdate, AppUser user) {
+        Band bandSaved = findByIdAndUser(bandId, user);
+        
+        bandValidation.valideUpdate(bandSaved, bandUpdate);
+
+        bandSaved.setName(bandUpdate.getName());
+        bandSaved.setDescription(bandUpdate.getDescription());
+
+        return bandRepository.save(bandSaved);
+    }
+
+    public void delete(Long bandId, AppUser user) {
+        Band band = findByIdAndUser(bandId, user);
+
+        if (band.getMembers().size() > 1)
+            throw new CustomException(String.format("Band '%s' must have only one member to be deleted", band.getName()), HttpStatus.BAD_REQUEST);
+
+        bandRepository.delete(band);
     }
 
     
