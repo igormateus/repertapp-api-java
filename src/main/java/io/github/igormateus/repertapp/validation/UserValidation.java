@@ -34,20 +34,20 @@ public class UserValidation {
             throw new CustomException(String.join("; ", errors), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    public void valideUpdate(AppUser appUser, UserUpdateDTO newUser) {
+    public void valideUpdate(AppUser userSaved, UserUpdateDTO newUser) {
         List<String> errors = new ArrayList<String>();
 
-        if (!appUser.getUsername().equals(newUser.getUsername()) 
+        if (!userSaved.getUsername().equals(newUser.getUsername()) 
                 && userRepository.existsByUsername(newUser.getUsername()))
             errors.add(String.format("Username '%s' is already in use", newUser.getUsername()));
 
         if (newUser.getEmail() != null 
-                && appUser.getEmail() != newUser.getEmail()
+                && userSaved.getEmail() != newUser.getEmail()
                 && userRepository.existsByEmail(newUser.getEmail()))
             errors.add(String.format("Email '%s' is already in use", newUser.getEmail()));
 
         if (newUser.getName() != null 
-                && appUser.getName() != newUser.getName()
+                && userSaved.getName() != newUser.getName()
                 && userRepository.existsByName(newUser.getName()))
             errors.add(String.format("Name '%s' is already in use", newUser.getName()));
 
