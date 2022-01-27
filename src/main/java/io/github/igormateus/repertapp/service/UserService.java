@@ -70,15 +70,15 @@ public class UserService {
                 .orElseThrow(() -> new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND));
     }
 
-    public AppUser edit(UserUpdateDTO user, HttpServletRequest req) {
+    public AppUser edit(UserUpdateDTO userUpdate, HttpServletRequest req) {
         AppUser appUser = whoami(req);
 
-        userValidation.valideUpdate(appUser, user);
+        userValidation.valideUpdate(appUser, userUpdate);
 
-        appUser.setUsername(user.getUsername());
-        appUser.setName(user.getName());
-        appUser.setEmail(user.getEmail());
-        appUser.setBio(user.getBio());
+        appUser.setUsername(userUpdate.getUsername());
+        appUser.setName(userUpdate.getName());
+        appUser.setEmail(userUpdate.getEmail());
+        appUser.setBio(userUpdate.getBio());
         if (appUser.getPassword() != null) 
             appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
 
