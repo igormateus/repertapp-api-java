@@ -31,7 +31,6 @@ public class AuthController {
     @PostMapping("/signup")
     @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<UserResponseDTO> signup(@Valid @RequestBody UserCreateDTO user) {
-
         UserAuthResponseDTO response = userService.signup(modelMapper.map(user, AppUser.class));
 
         return ResponseEntity
@@ -43,7 +42,6 @@ public class AuthController {
     // Authenticates user and returns its JWT token.
     @PostMapping("/signin")
     public ResponseEntity<Void> login(@Valid @RequestBody UserAuthDTO user) {
-
         return ResponseEntity
                 .ok()
                 .header("Authorization", userService.signin(user.getUsername(), user.getPassword()))

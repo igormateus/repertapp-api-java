@@ -24,5 +24,4 @@ public class UserResponseDTO {
     private String bio;
   
     List<AppUserRole> appUserRoles;
-
 }
