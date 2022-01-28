@@ -70,4 +70,18 @@ public class BandController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{bandId}/add-member/{memberId}")
+    public ResponseEntity<BandResponseDTO> addMember(@PathVariable Long bandId, @PathVariable Long memberId, HttpServletRequest req) {
+        Band band = bandService.addMember(bandId, memberId, userService.whoami(req));
+
+        return ResponseEntity.ok(modelMapper.map(band, BandResponseDTO.class));
+    }
+
+    @PostMapping("/{bandId}/remove-member/{memberId}")
+    public ResponseEntity<BandResponseDTO> removeMember(@PathVariable Long bandId, @PathVariable Long memberId, HttpServletRequest req) {
+        Band band = bandService.removeMember(bandId, memberId, userService.whoami(req));
+
+        return ResponseEntity.ok(modelMapper.map(band, BandResponseDTO.class));
+    }
 }

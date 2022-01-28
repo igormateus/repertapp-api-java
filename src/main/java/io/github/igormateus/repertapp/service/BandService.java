@@ -22,6 +22,7 @@ public class BandService {
 
     private final BandRepository bandRepository;
     private final BandValidation bandValidation;
+    private final UserService userService;
 
     public Band create(@Valid Band band, AppUser user) {
         bandValidation.valideCreation(band);
@@ -62,6 +63,28 @@ public class BandService {
             throw new CustomException(String.format("Band '%s' must have only one member to be deleted", band.getName()), HttpStatus.BAD_REQUEST);
 
         bandRepository.delete(band);
+    }
+
+    public Band addMember(Long bandId, Long memberId, AppUser user) {
+        Band band = findByIdAndUser(bandId, user);
+
+        if (band.getMembers().stream().anyMatch(m -> m.getId() == memberId))
+            throw new CustomException("User already in band", HttpStatus.BAD_REQUEST);
+
+        band.getMembers().add(userService.findOne(memberId));
+
+        return bandRepository.save(band);
+    }
+
+    public Band removeMember(Long bandId, Long memberId, AppUser user) {
+        Band band = findByIdAndUser(bandId, user);
+
+        if (band.getMembers().stream().noneMatch(m -> m.getId() == memberId))
+            throw new CustomException(String.format("User is not in band '%s'", band.getName()), HttpStatus.BAD_REQUEST);
+
+        band.getMembers().add(userService.findOne(memberId));
+
+        return bandRepository.save(band);
     }
 
     
