@@ -3,12 +3,12 @@ package io.github.igormateus.repertapp.controller;
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.github.igormateus.repertapp.dto.user.UserAuthDTO;
@@ -29,14 +29,13 @@ public class AuthController {
 
     // Creates user and returns his and its JWT token on header
     @PostMapping("/signup")
-    @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<UserResponseDTO> signup(@Valid @RequestBody UserCreateDTO user) {
         UserAuthResponseDTO response = userService.signup(modelMapper.map(user, AppUser.class));
 
-        return ResponseEntity
-                .ok()
-                .header("Authorization", response.getJwtToken())
-                .body(modelMapper.map(response.getUser(), UserResponseDTO.class));
+        HttpHeaders header = new HttpHeaders();
+        header.add("Authorization", response.getJwtToken());
+
+        return new ResponseEntity<UserResponseDTO>(modelMapper.map(response.getUser(), UserResponseDTO.class), header, HttpStatus.CREATED);
     }
     
     // Authenticates user and returns its JWT token.
