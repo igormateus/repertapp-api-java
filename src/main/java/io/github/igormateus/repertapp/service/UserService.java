@@ -8,7 +8,6 @@ import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -17,7 +16,8 @@ import org.springframework.stereotype.Service;
 
 import io.github.igormateus.repertapp.dto.user.UserAuthResponseDTO;
 import io.github.igormateus.repertapp.dto.user.UserUpdateDTO;
-import io.github.igormateus.repertapp.exception.CustomException;
+import io.github.igormateus.repertapp.exception.InvalidUsernamePasswordSuppliedException;
+import io.github.igormateus.repertapp.exception.UserNotFoundException;
 import io.github.igormateus.repertapp.model.AppUser;
 import io.github.igormateus.repertapp.model.AppUserRole;
 import io.github.igormateus.repertapp.repository.UserRepository;
@@ -52,7 +52,7 @@ public class UserService {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             return jwtTokenProvider.createToken(username, userRepository.findByUsername(username).getAppUserRoles());
         } catch (AuthenticationException e) {
-            throw new CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new InvalidUsernamePasswordSuppliedException("Invalid username/password supplied");
         }
     }
 
@@ -67,7 +67,7 @@ public class UserService {
     public AppUser findOne(Long userId) {
         return userRepository
                 .findById(userId)
-                .orElseThrow(() -> new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new UserNotFoundException(userId));
     }
 
     public AppUser edit(UserUpdateDTO userUpdate, HttpServletRequest req) {

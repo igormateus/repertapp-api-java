@@ -12,7 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import io.github.igormateus.repertapp.dto.user.UserUpdateDTO;
-import io.github.igormateus.repertapp.exception.CustomException;
+import io.github.igormateus.repertapp.exception.DuplicateValidationException;
 import io.github.igormateus.repertapp.model.AppUser;
 import io.github.igormateus.repertapp.repository.UserRepository;
 import io.github.igormateus.repertapp.util.UserCreator;
@@ -67,7 +67,7 @@ public class UserValidationTest {
         AppUser userToBeSaved = UserCreator.createToBeSaved();
         userToBeSaved.setUsername("username_saved");
 
-        Assertions.assertThatExceptionOfType(CustomException.class)
+        Assertions.assertThatExceptionOfType(DuplicateValidationException.class)
                 .isThrownBy(() -> userValidation.valideCreation(userToBeSaved))
                 .withMessage("Username 'username_saved' is already in use");
     }
@@ -78,7 +78,7 @@ public class UserValidationTest {
         AppUser userToBeSaved = UserCreator.createToBeSaved();
         userToBeSaved.setEmail("email_saved@email.com");
 
-        Assertions.assertThatExceptionOfType(CustomException.class)
+        Assertions.assertThatExceptionOfType(DuplicateValidationException.class)
                 .isThrownBy(() -> userValidation.valideCreation(userToBeSaved))
                 .withMessage("Email 'email_saved@email.com' is already in use");
     }
@@ -89,7 +89,7 @@ public class UserValidationTest {
         AppUser userToBeSaved = UserCreator.createToBeSaved();
         userToBeSaved.setName("name_saved");
 
-        Assertions.assertThatExceptionOfType(CustomException.class)
+        Assertions.assertThatExceptionOfType(DuplicateValidationException.class)
                 .isThrownBy(() -> userValidation.valideCreation(userToBeSaved))
                 .withMessage("Name 'name_saved' is already in use");
     }
@@ -130,7 +130,7 @@ public class UserValidationTest {
 
         AppUser userSaved = UserCreator.createToBeSaved();
 
-        Assertions.assertThatExceptionOfType(CustomException.class)
+        Assertions.assertThatExceptionOfType(DuplicateValidationException.class)
                 .isThrownBy(() -> userValidation.valideUpdate(userSaved, modelMapper.map(user, UserUpdateDTO.class)))
                 .withMessage("Username 'username_saved' is already in use");
     }
@@ -143,7 +143,7 @@ public class UserValidationTest {
 
         AppUser userSaved = UserCreator.createToBeSaved();
 
-        Assertions.assertThatExceptionOfType(CustomException.class)
+        Assertions.assertThatExceptionOfType(DuplicateValidationException.class)
                 .isThrownBy(() -> userValidation.valideUpdate(userSaved, modelMapper.map(user, UserUpdateDTO.class)))
                 .withMessage("Email 'email_saved@email.com' is already in use");
     }
@@ -156,7 +156,7 @@ public class UserValidationTest {
 
         AppUser userSaved = UserCreator.createToBeSaved();
 
-        Assertions.assertThatExceptionOfType(CustomException.class)
+        Assertions.assertThatExceptionOfType(DuplicateValidationException.class)
                 .isThrownBy(() -> userValidation.valideUpdate(userSaved, modelMapper.map(user, UserUpdateDTO.class)))
                 .withMessage("Name 'name_saved' is already in use");
     }

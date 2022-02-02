@@ -4,12 +4,15 @@ import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import io.github.igormateus.repertapp.dto.band.BandUpdateDTO;
-import io.github.igormateus.repertapp.exception.CustomException;
+import io.github.igormateus.repertapp.exception.BandDeleteNoSingleMemberException;
+import io.github.igormateus.repertapp.exception.BandNotFoundException;
+import io.github.igormateus.repertapp.exception.OnlyMemberBandException;
+import io.github.igormateus.repertapp.exception.UserAlreadyExistsInTheBandException;
+import io.github.igormateus.repertapp.exception.UserNotInBandException;
 import io.github.igormateus.repertapp.model.AppUser;
 import io.github.igormateus.repertapp.model.Band;
 import io.github.igormateus.repertapp.repository.BandRepository;
@@ -37,7 +40,7 @@ public class BandService {
 
     public Band findByIdAndUser(Long bandId, AppUser user) {
         Band band = bandRepository.findById(bandId)
-                .orElseThrow(() -> new CustomException(String.format("Band id '%s' not found", bandId), HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BandNotFoundException(bandId));
         
         if (!band.getMembers().stream().anyMatch(member -> member.getId() == user.getId()))
             throw new AccessDeniedException(String.format("You don't have access for Band '%s'", band.getName()));
@@ -60,7 +63,7 @@ public class BandService {
         Band band = findByIdAndUser(bandId, user);
 
         if (band.getMembers().size() > 1)
-            throw new CustomException(String.format("Band '%s' must have only one member to be deleted", band.getName()), HttpStatus.BAD_REQUEST);
+            throw new BandDeleteNoSingleMemberException(band.getName());
 
         bandRepository.delete(band);
     }
@@ -69,7 +72,7 @@ public class BandService {
         Band band = findByIdAndUser(bandId, user);
 
         if (band.getMembers().stream().anyMatch(m -> m.getId() == memberId))
-            throw new CustomException("User already in band", HttpStatus.BAD_REQUEST);
+            throw new UserAlreadyExistsInTheBandException(memberId, band.getName());
 
         band.getMembers().add(userService.findOne(memberId));
 
@@ -79,10 +82,13 @@ public class BandService {
     public Band removeMember(Long bandId, Long memberId, AppUser user) {
         Band band = findByIdAndUser(bandId, user);
 
+        if (band.getMembers().size() == 1)
+            throw new OnlyMemberBandException(band.getName());
+        
         if (band.getMembers().stream().noneMatch(m -> m.getId() == memberId))
-            throw new CustomException(String.format("User is not in band '%s'", band.getName()), HttpStatus.BAD_REQUEST);
+            throw new UserNotInBandException(memberId, band.getName());
 
-        band.getMembers().add(userService.findOne(memberId));
+        band.getMembers().remove(userService.findOne(memberId));
 
         return bandRepository.save(band);
     }

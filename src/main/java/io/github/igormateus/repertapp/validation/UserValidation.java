@@ -3,11 +3,10 @@ package io.github.igormateus.repertapp.validation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import io.github.igormateus.repertapp.dto.user.UserUpdateDTO;
-import io.github.igormateus.repertapp.exception.CustomException;
+import io.github.igormateus.repertapp.exception.DuplicateValidationException;
 import io.github.igormateus.repertapp.model.AppUser;
 import io.github.igormateus.repertapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,7 @@ public class UserValidation {
             errors.add(String.format("Name '%s' is already in use", appUser.getName()));
 
         if (errors.size() > 0)
-            throw new CustomException(String.join("; ", errors), HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new DuplicateValidationException(String.join("; ", errors));
     }
 
     public void valideUpdate(AppUser userSaved, UserUpdateDTO newUser) {
@@ -52,6 +51,6 @@ public class UserValidation {
             errors.add(String.format("Name '%s' is already in use", newUser.getName()));
 
         if (errors.size() > 0)
-            throw new CustomException(String.join("; ", errors), HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new DuplicateValidationException(String.join("; ", errors));
     }
 }
