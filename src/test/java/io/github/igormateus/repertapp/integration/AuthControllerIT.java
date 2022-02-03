@@ -294,4 +294,75 @@ class AuthControllerIT {
         Assertions.assertThat(authResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(authResponseEntity.getHeaders().getFirst("Authorization")).isNotNull();
     }
+    
+    @Test
+    @DisplayName("signin returns an error when null username was sent")
+    void signin_returnsAnError_whenNullUsernameWasSent() {
+        userService.signup(UserCreator.createToBeSaved());
+
+        UserAuthDTO userAuthDTO = UserAuthDTOCreator.createValid();
+        userAuthDTO.setUsername(null);
+
+        ResponseEntity<ApiError> authResponseEntity = testRestTemplate.postForEntity(
+            "/auth/signin",
+            userAuthDTO,
+            ApiError.class
+        );
+
+        Assertions.assertThat(authResponseEntity).isNotNull();
+        Assertions.assertThat(authResponseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        Assertions.assertThat(authResponseEntity.getHeaders().getFirst("Authorization")).isNull();
+        Assertions.assertThat(authResponseEntity.getBody()).isNotNull();
+        Assertions.assertThat(authResponseEntity.getBody().getDetail()).isEqualTo("One or more fields are invalid or missing. Please, make sure you're sending the data according the API standards and try again.");
+        Assertions.assertThat(authResponseEntity.getBody().getTitle()).isEqualTo("Invalid Data");
+        Assertions.assertThat(authResponseEntity.getBody().getErrorObjects().get(0).getName()).isEqualTo("username");
+        Assertions.assertThat(authResponseEntity.getBody().getErrorObjects().get(0).getUserMessage()).isEqualTo("é obrigatório");
+    }
+
+    @Test
+    @DisplayName("signin returns an error when null password was sent")
+    void signin_returnsAnError_whenNullPasswordWasSent() {
+        userService.signup(UserCreator.createToBeSaved());
+
+        UserAuthDTO userAuthDTO = UserAuthDTOCreator.createValid();
+        userAuthDTO.setPassword(null);
+
+        ResponseEntity<ApiError> authResponseEntity = testRestTemplate.postForEntity(
+            "/auth/signin",
+            userAuthDTO,
+            ApiError.class
+        );
+
+        Assertions.assertThat(authResponseEntity).isNotNull();
+        Assertions.assertThat(authResponseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        Assertions.assertThat(authResponseEntity.getHeaders().getFirst("Authorization")).isNull();
+        Assertions.assertThat(authResponseEntity.getBody()).isNotNull();
+        Assertions.assertThat(authResponseEntity.getBody().getDetail()).isEqualTo("One or more fields are invalid or missing. Please, make sure you're sending the data according the API standards and try again.");
+        Assertions.assertThat(authResponseEntity.getBody().getTitle()).isEqualTo("Invalid Data");
+        Assertions.assertThat(authResponseEntity.getBody().getErrorObjects().get(0).getName()).isEqualTo("password");
+        Assertions.assertThat(authResponseEntity.getBody().getErrorObjects().get(0).getUserMessage()).isEqualTo("é obrigatório");
+    }
+
+    // throw new InvalidUsernamePasswordSuppliedException("Invalid username/password supplied")
+    @Test
+    @DisplayName("signin returns an error when invalid username or password was sent")
+    void signin_returnsAnError_whenInvalidUsernameOrPasswordWasSent() {
+        userService.signup(UserCreator.createToBeSaved());
+
+        UserAuthDTO userAuthDTO = UserAuthDTOCreator.createValid();
+        userAuthDTO.setPassword("invalid_pass");
+
+        ResponseEntity<ApiError> authResponseEntity = testRestTemplate.postForEntity(
+            "/auth/signin",
+            userAuthDTO,
+            ApiError.class
+        );
+
+        Assertions.assertThat(authResponseEntity).isNotNull();
+        Assertions.assertThat(authResponseEntity.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+        Assertions.assertThat(authResponseEntity.getHeaders().getFirst("Authorization")).isNull();
+        Assertions.assertThat(authResponseEntity.getBody()).isNotNull();
+        Assertions.assertThat(authResponseEntity.getBody().getDetail()).isEqualTo("Invalid username/password supplied");
+        Assertions.assertThat(authResponseEntity.getBody().getTitle()).isEqualTo("Security Error");
+    }
 }
