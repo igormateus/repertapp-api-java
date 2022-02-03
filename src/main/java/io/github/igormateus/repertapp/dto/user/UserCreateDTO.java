@@ -12,18 +12,18 @@ import lombok.NoArgsConstructor;
 public class UserCreateDTO {
 
     @NotBlank
-    @Size(min = 5, max = 255)
+    @Size(min = 3, max = 255)
     private String username;
   
     @NotBlank
-    @Size(min = 8)
+    @Size(min = 8, max = 255)
     private String password;
-  
-    @Email
-    private String email;
   
     @Size(min = 3, max = 255)
     private String name;
+    
+    @Email
+    private String email;
   
     @Size(max = 250)
     private String bio;
