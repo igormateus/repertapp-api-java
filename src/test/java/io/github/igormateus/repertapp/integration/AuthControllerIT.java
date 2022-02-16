@@ -343,7 +343,6 @@ class AuthControllerIT {
         Assertions.assertThat(authResponseEntity.getBody().getErrorObjects().get(0).getUserMessage()).isEqualTo("é obrigatório");
     }
 
-    // throw new InvalidUsernamePasswordSuppliedException("Invalid username/password supplied")
     @Test
     @DisplayName("signin returns an error when invalid username or password was sent")
     void signin_returnsAnError_whenInvalidUsernameOrPasswordWasSent() {
