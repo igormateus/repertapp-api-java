@@ -31,7 +31,7 @@ public class UserController {
 
     // Edits user's data
     @PutMapping("/me")
-    public UserResponseDTO editUser(@Valid @RequestBody UserUpdateDTO user, HttpServletRequest req) {
+    public UserResponseDTO editMe(@Valid @RequestBody UserUpdateDTO user, HttpServletRequest req) {
         return modelMapper.map(userService.edit(user, req), UserResponseDTO.class);
     }
 }
